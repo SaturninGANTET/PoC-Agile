@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+	echo "No file entered."
+	helpText
+  exit 1
+fi
+
+#Get file to puush and puush it
+case "$1" in
+	-a)
+		echo "Whole Desktop"
+			fileName="test.png"
+			gnome-screenshot -f "$fileName"
+			puushFile "$fileName"
+		;;
+
+	-b)
+		echo "Area"
+			fileName="test.png"
+			gnome-screenshot -a -f "$fileName"
+			puushFile "$fileName"
+		;;
+
+	-c)
+		echo "Window"
+			fileName="test.png"
+			gnome-screenshot -w -f "$fileName"
+			puushFile "$fileName"
+		;;
+
+	-d)
+		echo "File Upload"
+			fileName=`zenity --file-selection`
+			puushFile "$fileName"
+		;;
+	
+	*)
+
+esac
