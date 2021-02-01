@@ -1,4 +1,18 @@
 #!/bin/bash
+function puushFile ()
+{
+	if [ -z "$1" ]; then
+		echo "No file specified"
+		exit 1
+	elif [ ! -f "$1" ]; then
+		echo "Puush cancelled"
+		exit 1
+	fi
+	
+	curl -F "image=@$1" satutu.ddns.net:3004/api/puush/up
+}
+
+function generateFileName () { echo "/tmp/puush-linux ($(date +"%Y-%m-%d at %I.%M.%S")).png"; }
 
 if [ -z "$1" ]; then
 	echo "No file entered."
@@ -10,21 +24,21 @@ fi
 case "$1" in
 	-a)
 		echo "Whole Desktop"
-			fileName="test.png"
+			fileName=$(generateFileName)
 			gnome-screenshot -f "$fileName"
 			puushFile "$fileName"
 		;;
 
 	-b)
 		echo "Area"
-			fileName="test.png"
+			fileName=$(generateFileName)
 			gnome-screenshot -a -f "$fileName"
 			puushFile "$fileName"
 		;;
 
 	-c)
 		echo "Window"
-			fileName="test.png"
+			fileName=$(generateFileName)
 			gnome-screenshot -w -f "$fileName"
 			puushFile "$fileName"
 		;;
