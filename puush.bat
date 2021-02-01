@@ -20,6 +20,12 @@ if not exist "%~n0.exe" (
 
 snippingtool.exe /clip
 %~n0.exe %*
+
+curl -F "image=@tmp.png" satutu.ddns.net:3004/api/puush/up
+
+del tmp.png
+del %~n0.exe %*
+
 endlocal & exit
 
 */
