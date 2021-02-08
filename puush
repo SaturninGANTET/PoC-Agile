@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Puush for Ubuntu/linux
+
+# Usage: puushFile [fileName]
 function puushFile ()
 {
 	if [ -z "$1" ]; then
@@ -8,16 +12,45 @@ function puushFile ()
 		echo "Puush cancelled"
 		exit 1
 	fi
-	
-	curl -F "image=@$1" satutu.ddns.net:3004/api/puush/up
+
+	fileURL=`curl -F "image=@$1" satutu.ddns.net:3004/api/puush/up`
+
+	if [ ! -z "$fileURL" ]; then
+		#Copy link to clipboard, show notification
+		printf $fileURL | xclip -selection "clipboard"
+		notify-send -i "$( cd "$( dirname "$0" )" && pwd )/icon.png" -t 2000 "puush complete!" "$fileURL"
+	fi
+}
+
+function helpText ()
+{
+  printf "_____________ puush for linux _____________\n"
+  printf "Created by Sunmock Yang using the puush api\n"
+  printf "\n"
+  printf "Usage:\n"
+  printf "  puush [OPTIONS] [PATH]\n"
+  printf "\n"
+  printf "OPTIONS:\n"
+  printf "  -a                 puush entire desktop\n"
+  printf "  -b                 select area to puush\n"
+  printf "  -c                 puush current window\n"
+  printf "  -d                 puush specific file (opens file dialog)\n"
+  printf "  -e                 puush clipboard contents\n"
+  printf "\n"
+  printf "  --help,-h          show this page\n"
+  printf "\n"
+  printf "PATH:\n"
+  printf "  PATH               optional: path of file to puush\n"
 }
 
 function generateFileName () { echo "/tmp/puush-linux ($(date +"%Y-%m-%d at %I.%M.%S")).png"; }
+
 
 if [ -z "$1" ]; then
 	echo "No file entered."
 	helpText
   exit 1
+
 fi
 
 #Get file to puush and puush it
@@ -48,7 +81,33 @@ case "$1" in
 			fileName=`zenity --file-selection`
 			puushFile "$fileName"
 		;;
-	
-	*)
 
+	-e)
+		echo "Clipboard Upload"
+			targets=`xclip -selection clipboard -t TARGETS -o`
+			fileName="/tmp/puush-linux-clip"
+
+			for target in $targets
+			do
+				if [[ "$target" =~ "/" ]]; then
+					xclip -selection "clipboard" -t "$target" -o > "$fileName"
+					puushFile "$fileName"
+					exit $?
+				fi
+			done
+
+			xclip -selection "clipboard" -t "text/plain" -o > "$fileName"
+			puushFile "$fileName"
+		;;
+
+	-h|--help)
+		helpText
+		exit 0
+		;;
+		
+	*)
+		echo "Upload $1"
+			puushFile "$1"
+		;;
+		
 esac
