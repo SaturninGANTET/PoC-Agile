@@ -20,6 +20,7 @@ function puushFile ()
 		printf $fileURL | xclip -selection "clipboard"
 		notify-send -i "$( cd "$( dirname "$0" )" && pwd )/icon.png" -t 2000 "puush complete!" "$fileURL"
 	fi
+	echo $fileURL
 }
 
 function helpText ()
